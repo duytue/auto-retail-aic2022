@@ -66,17 +66,16 @@ class AIC2022_AutoRetail_Dataset(Dataset):
             index = index.tolist()
 
         # Load mosaic
-        img, labels = self.load_mosaic(index)
-        # img, _, _ = self.load_image(index)
-        label = self.get_label(index)
+        img, boxes, labels = self.load_mosaic(index)
         if self.transform:
             img = self.transform(img)
 
-        return img, label
+        return img, boxes, labels
 
     def load_mosaic(self, index):
         # YOLOv5 4-mosaic loader. Loads 1 image + 3 random images into a 4-image mosaic
         labels4 = []
+        boxes4 = []
         s = self.img_size
         yc, xc = (int(random.uniform(-x, 2 * s + x)) for x in self.mosaic_border)  # mosaic center x, y
         indices = [index] + random.choices(self.indices, k=3)  # 3 additional image indices
@@ -104,11 +103,14 @@ class AIC2022_AutoRetail_Dataset(Dataset):
             padw = x1a - x1b
             padh = y1a - y1b
 
+            # boxes
+            box = [x1b, y1b, x2b - x1b, y2b - y1b]
+            box = xywhn2xyxy(box, w, h, padw, padh)  # normalized xywh to pixel xyxy format
+            boxes4.append(box)
+
             # Labels
-            # labels = self.labels[index].copy()
-            # if labels.size:
-            #     labels[:, 1:] = xywhn2xyxy(labels[:, 1:], w, h, padw, padh)  # normalized xywh to pixel xyxy format
-            # labels4.append(labels)
+            label = self.get_label(i)
+            labels4.append(label)
 
         # Concat/clip labels
         # labels4 = np.concatenate(labels4, 0)
@@ -130,7 +132,7 @@ class AIC2022_AutoRetail_Dataset(Dataset):
         #     border=self.mosaic_border,
         # )  # border to remove
 
-        return img4, labels4
+        return img4, boxes4, labels4
 
     def load_mosaic9(self, index):
         # YOLOv5 9-mosaic loader. Loads 1 image + 8 random images into a 9-image mosaic
