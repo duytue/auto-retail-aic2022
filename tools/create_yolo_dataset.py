@@ -1,11 +1,14 @@
 import os
+import random
 from pathlib import Path
 
 import cv2
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import torch
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
+
 
 def get_labels(fname):
     df = pd.read_csv(fname, header=None)
@@ -29,7 +32,7 @@ def clip_coords(boxes, shape):
 
 def xyxy2xywhn(x, w=640, h=640, clip=False, eps=0.0):
     if isinstance(x, list):
-        x = np.array(x)
+        x = np.array(x, dtype=np.float32)
     # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] normalized where xy1=top-left, xy2=bottom-right
     if clip:
         clip_coords(x, (h - eps, w - eps))  # warning: inplace clip
@@ -51,13 +54,31 @@ def create_yolo_bbox_from(img) -> list:
 
 def split_label_from_image_name(image_name: Path) -> int:
     basename = image_name.stem
-    label_id, image_id = basename.split("_")
+    label_id, _ = basename.split("_")
     return int(label_id)
 
-def write_yolo_annotations_to_file(root_dir: Path, label_dir: Path, annotations: list):
-    output_label_fname = root_dir / "yolo_train.txt"
+
+def prepare_yolo_annotations(image_files: list) -> list:
+    annotations = []
+    for fname in image_files:
+        label_id = split_label_from_image_name(fname)
+        img = cv2.imread(str(fname))
+        xywh_normalized = create_yolo_bbox_from(img)
+        anno = {
+            "file_name": fname,
+            "label_id": label_id - 1, # YOLO index starts at 0
+            "bbox": xywh_normalized
+        }
+        annotations.append(anno)
+    return annotations
+
+
+def write_yolo_anno_to_file(label_dir: Path, fname: Path, file_list: list):
+    annotations = prepare_yolo_annotations(file_list)
+
     written_lines = 0
-    with open(output_label_fname, "w") as f1:
+    print(f" Writing labels to {fname}")
+    with open(fname, "w") as f1:
         for anno in annotations:
             file_name = anno.get("file_name")
             label_id = anno.get("label_id")
@@ -66,13 +87,50 @@ def write_yolo_annotations_to_file(root_dir: Path, label_dir: Path, annotations:
             image_label_path = label_dir / (file_name.stem + ".txt")
             with open(image_label_path, "w") as f2:
                 x, y, w, h = bbox
-                txt = f"{label_id} {x} {y} {w} {h}\n"
+                txt = f"{label_id} {x:.3f} {y:.3f} {w:.3f} {h:.3f}\n"
                 f2.write(txt)
             
-            f1.write(file_name.name)
+            f1.write(f"./images/{file_name.name}")
             f1.write("\n")
             written_lines += 1
-    print(f"Written {written_lines} rows")
+    print(f" Written {written_lines} rows")
+
+
+def stratified_k_folds(annotations: list, n_splits: int = 1, test_size: float = 0.2, seed: int = None):
+    labels = [split_label_from_image_name(anno) for anno in annotations]
+    skf = StratifiedShuffleSplit(n_splits=n_splits, test_size=test_size, random_state=seed)
+    folds = []
+    for train_index, test_index in skf.split(annotations, labels):
+        X_train, X_test = annotations[train_index], annotations[test_index]
+        # y is included in annotations
+        # y_train, y_test = labels[train_index], labels[test_index]
+        folds.append([X_train, X_test])
+    return folds
+
+
+def generate_yolo_annotations(root_dir: Path, label_dir: Path, annotations: list, seed: int = None):
+    # Split dataset into train-val
+    folds = stratified_k_folds(np.array(annotations), n_splits=4, test_size=0.1, seed=seed)
+
+    for i, fold in enumerate(folds):
+        print(f"-- Performing Stratified K-Folds")
+        train_set, val_set = fold
+        val_set, test_set = stratified_k_folds(
+            val_set,
+            n_splits=1,
+            test_size=0.5,
+            seed=seed
+        )[0]
+
+        train_label_fname = root_dir / f"small-yolo_train_{i}.txt"
+        write_yolo_anno_to_file(label_dir, train_label_fname, train_set)
+
+        val_label_fname = root_dir / f"small-yolo_val_{i}.txt"
+        write_yolo_anno_to_file(label_dir, val_label_fname, val_set)
+        
+        test_label_fname = root_dir / f"small-yolo_test_{i}.txt"
+        write_yolo_anno_to_file(label_dir, test_label_fname, test_set)
+        print()
 
 
 def write_yolo_dataset_info(root_dir: Path, label_mapping: dict):
@@ -104,17 +162,27 @@ def write_yolo_dataset_info(root_dir: Path, label_mapping: dict):
             f.write(f"{label_name}\n")
 
 
-def create_yolo_dataset(root_dir: Path, annotations: list, label_mapping: dict):
+def create_yolo_dataset(root_dir: Path, image_files: list, label_mapping: dict):
     """
     Write yolov5 dataset's contents: obj.names, obj.data, train.txt, labels/*.txt
     """
-    YOLO_LABEL_DIR = root_dir / "yolo_labels"
+    seed = 42
+    YOLO_LABEL_DIR = root_dir / "labels"
     if not YOLO_LABEL_DIR.is_dir():
         os.makedirs(YOLO_LABEL_DIR)
     
     write_yolo_dataset_info(root_dir, label_mapping)
-    write_yolo_annotations_to_file(root_dir, YOLO_LABEL_DIR, annotations)
-        
+    generate_yolo_annotations(root_dir, YOLO_LABEL_DIR, image_files, seed=seed)
+
+
+def plot_dataset_histogram(image_files, label_mapping):
+    from collections import Counter
+    labels = [split_label_from_image_name(name) for name in image_files]
+    counts = Counter(labels)
+    print(counts)
+    # plot = sns.displot(labels, bins=len(label_mapping), kde=True)
+    # plot.figure.savefig("distibution.png")
+
 
 def main():
     DATASET_DIR = Path("../datasets/track4")
@@ -123,22 +191,13 @@ def main():
     LABEL_FILE = DATASET_ROOT_DIR / "labels.txt"
 
     image_files = sorted(list(IMAGE_DIR.glob("**/*.jpg")))
+    # image_files = random.sample(image_files, 10000)
     print(f"Total image files: {len(image_files)}")
     label_mapping = get_labels(LABEL_FILE)
 
-    annotations = []
-    for fname in image_files:
-        label_id = split_label_from_image_name(fname)
-        img = cv2.imread(str(fname))
-        xywh_normalized = create_yolo_bbox_from(img)
-        anno = {
-            "file_name": fname,
-            "label_id": label_id - 1, # YOLO index starts at 0
-            "bbox": xywh_normalized
-        }
-        annotations.append(anno)
-    
-    create_yolo_dataset(DATASET_ROOT_DIR, annotations, label_mapping)
+    plot_dataset_histogram(image_files, label_mapping)
+
+    create_yolo_dataset(DATASET_ROOT_DIR, image_files, label_mapping)
 
 
 if __name__ == "__main__":
