@@ -394,6 +394,8 @@ class LoadImagesAndLabels(Dataset):
         self.path = path
         self.albumentations = Albumentations() if augment else None
 
+        self.test_background_image = cv2.imread("/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-test-img.png")
+
         try:
             f = []  # image files
             for p in path if isinstance(path, list) else [path]:
@@ -567,7 +569,8 @@ class LoadImagesAndLabels(Dataset):
 
         else:
             # Load image
-            img, (h0, w0), (h, w) = self.load_image(index)
+            # img, (h0, w0), (h, w) = self.load_image(index)
+            img, (h0, w0), (h, w), new_label = self.load_image_with_random_background(index)
 
             # Letterbox
             shape = self.batch_shapes[self.batch[index]] if self.rect else self.img_size  # final letterboxed shape
@@ -576,6 +579,7 @@ class LoadImagesAndLabels(Dataset):
 
             labels = self.labels[index].copy()
             if labels.size:  # normalized xywh to pixel xyxy format
+                labels [:, 1:] = new_label[:, :]
                 labels[:, 1:] = xywhn2xyxy(labels[:, 1:], ratio[0] * w, ratio[1] * h, padw=pad[0], padh=pad[1])
 
             if self.augment:
@@ -642,6 +646,27 @@ class LoadImagesAndLabels(Dataset):
             return im, (h0, w0), im.shape[:2]  # im, hw_original, hw_resized
         else:
             return self.ims[i], self.im_hw0[i], self.im_hw[i]  # im, hw_original, hw_resized
+    
+    def load_image_with_random_background(self, i):
+        # Loads 1 image from dataset index 'i', returns (im, original hw, resized hw)
+        im, f, fn = self.ims[i], self.im_files[i], self.npy_files[i],
+        if im is None:  # not cached in RAM
+            if fn.exists():  # load npy
+                im = np.load(fn)
+            else:  # read image
+                im = cv2.imread(f)  # BGR
+                assert im is not None, f'Image Not Found {f}'
+            multiplier = np.random.uniform(1.1,2.0)
+            im, new_label, _, _ = self.add_random_background(im)
+            h0, w0 = im.shape[:2]  # orig hw
+            r = self.img_size / max(h0, w0)  # ratio
+            if r != 1:  # if sizes are not equal
+                im = cv2.resize(im,
+                                (int(w0 * r), int(h0 * r)),
+                                interpolation=cv2.INTER_LINEAR if (self.augment or r > 1) else cv2.INTER_AREA)
+            return im, (h0, w0), im.shape[:2], new_label  # im, hw_original, hw_resized
+        else:
+            return self.ims[i], self.im_hw0[i], self.im_hw[i]  # im, hw_original, hw_resized
 
     def cache_images_to_disk(self, i):
         # Saves an image as an *.npy file for faster loading
@@ -649,18 +674,36 @@ class LoadImagesAndLabels(Dataset):
         if not f.exists():
             np.save(f.as_posix(), cv2.imread(self.im_files[i]))
     
-    def add_random_background(self, img, min_size: int = 1024, max_size: int = 1024):
-        # Add random color background to image
+    def add_random_background(self, img, min_size: int = None, max_size: int = None, segments: list = None):
+        # # Add random color background to image
         color = tuple(np.random.randint(255, size=3))
+
+        if min_size is None:
+            long_side = max(img.shape[:2])
+            min_size = int(np.random.randint(long_side*1.5, long_side*2))
+            max_size = int(np.random.randint(min_size+1, min_size*1.5))
 
         size = int(np.random.randint(min_size, max_size, size=1))
         # Fill background with color
-        background = np.full((size, size, 3), color, dtype=np.uint8)
+        # background = np.full((size, size, 3), color, dtype=np.uint8)
+
+        # background = np.random.randint(low=0, high=255, size=(size, size, 3), dtype=np.uint8)
+        background = cv2.resize(self.test_background_image, (size, size))
 
         # Paste img into background
         h, w = img.shape[:2]
         offset_x, offset_y = np.random.randint(size - w), np.random.randint(size - h)
         new_label = xyxy2xywhn(np.array([[offset_x, offset_y, offset_x+w, offset_y+h]], dtype=np.float32), w=size, h=size)
+
+        new_segments = None
+        if segments is not None:
+            # new_segments = [xyn2xy(x, w, h, offset_x, offset_y) for x in segments]
+            new_segments = self.convert_segment_random_background(
+                segments,
+                offsets=(offset_x, offset_y),
+                new_size=(size, size),
+                org_size=(h, w)
+            )
 
         background[offset_y:offset_y+h, offset_x:offset_x+w] = img
         h0, w0 = background.shape[:2]  # orig hw
@@ -669,8 +712,26 @@ class LoadImagesAndLabels(Dataset):
             background = cv2.resize(background,
                             (int(w0 * r), int(h0 * r)),
                             interpolation=cv2.INTER_LINEAR if (self.augment or r > 1) else cv2.INTER_AREA)
-        return background, new_label, background.shape[:2]  # im, hw_original, hw_resized
+        return background, new_label, background.shape[:2], new_segments
+    
+    def convert_segment_random_background(self, segments: np.ndarray, offsets: tuple, new_size: tuple= None, org_size: tuple = None):
+        new_h, new_w = new_size
+        org_h, org_w = org_size
 
+        offset_x, offset_y = offsets
+        # Convert old normalized segments to xy
+        new_segments = np.array(segments.copy())
+        new_segments[:, :, 0] = new_segments[:, :, 0] * org_w
+        new_segments[:, :, 1] = new_segments[:, :, 1] * org_h
+
+        # Add offset to new_segments
+        new_segments[:, :, 0] = new_segments[:, :, 0] + offset_x
+        new_segments[:, :, 1] = new_segments[:, :, 1] + offset_y
+
+        # Convert new_segments to normalized values in padded images
+        new_segments[:, :, 0] = new_segments[:, :, 0] / new_w
+        new_segments[:, :, 1] = new_segments[:, :, 1] / new_h
+        return new_segments
     
     def load_mosaic_with_random_background(self, index):
         # YOLOv5 4-mosaic loader. Loads 1 image + 3 random images into a 4-image mosaic
@@ -681,10 +742,11 @@ class LoadImagesAndLabels(Dataset):
         random.shuffle(indices)
         for i, index in enumerate(indices):
             # Load image
-            img, _, (h, w) = self.load_image(index)
+            img, _, (org_h, org_w) = self.load_image(index)
 
             # Add random background
-            img, new_label, (h, w) = self.add_random_background(img, max_size=1280)
+            # img, new_label, (h, w) = self.add_random_background(img, max_size=1280)
+            img, new_label, (h, w), segments = self.add_random_background(img, segments=self.segments[index].copy())
 
             # place img in img4
             if i == 0:  # top left
@@ -706,11 +768,13 @@ class LoadImagesAndLabels(Dataset):
             padh = y1a - y1b
 
             # Labels
-            labels, segments = self.labels[index].copy(), self.segments[index].copy()
+            # labels, segments = self.labels[index].copy(), self.segments[index].copy()
+            labels = self.labels[index].copy()
             if labels.size:
                 labels[:, 1:] = new_label[:, :]
                 labels[:, 1:] = xywhn2xyxy(labels[:, 1:], w, h, padw, padh)  # normalized xywh to pixel xyxy format
                 segments = [xyn2xy(x, w, h, padw, padh) for x in segments]
+                # segments = self.convert_segment_random_background(segments, (new_size, new_size), (org_h, org_w), (offset_x, offset_y))
             labels4.append(labels)
             segments4.extend(segments)
 
