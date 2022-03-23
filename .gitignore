@@ -1,5 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,images,video
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,images,video
+#
+**/wandb/
 
 ### Images ###
 # JPEG
