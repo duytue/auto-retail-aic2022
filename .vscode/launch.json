@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "yolov5/train.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--data", "../datasets/track4/Auto-retail-syndata-release/aic22-track4-yolo-fold0.yaml",
+                "--hyp", "yolov5/data/hyps/hyp.scratch-aic2022.yaml",
+                "--weights", "yolov5s6.pt",
+                "--epochs", "10",
+                "--batch", "32"
+            ]
+        }
+    ]
+}
