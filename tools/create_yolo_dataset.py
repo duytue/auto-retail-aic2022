@@ -9,6 +9,8 @@ import seaborn as sns
 import torch
 from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
 
+from find_contours import get_contours
+
 
 def get_labels(fname):
     df = pd.read_csv(fname, header=None)
@@ -44,12 +46,17 @@ def xyxy2xywhn(x, w=640, h=640, clip=False, eps=0.0):
     return y.squeeze()
 
 
-def create_yolo_bbox_from(img) -> list:
+def create_yolo_bbox_from(img, segment=None) -> list:
     h, w = img.shape[:2]
     x1, y1, x2, y2 = 0, 0, w - 1, h - 1
 
-    xywh_normalized = xyxy2xywhn([[x1, y1, x2, y2]], w, h)
-    return xywh_normalized
+    if segment is not None:
+        segment = segment.astype(np.float32)
+        segment[:, :, 0] = segment[:, :, 0] / w
+        segment[:, :, 1] = segment[:, :, 1] / h
+        return segment.ravel()
+    else:
+        return xyxy2xywhn([[x1, y1, x2, y2]], w, h)
 
 
 def split_label_from_image_name(image_name: Path) -> int:
@@ -58,12 +65,14 @@ def split_label_from_image_name(image_name: Path) -> int:
     return int(label_id)
 
 
-def prepare_yolo_annotations(image_files: list) -> list:
+def prepare_yolo_annotations(image_files: list, segment_dir: str) -> list:
     annotations = []
     for fname in image_files:
         label_id = split_label_from_image_name(fname)
+        seg_file = segment_dir / f"{fname.stem}_seg.jpg"
         img = cv2.imread(str(fname))
-        xywh_normalized = create_yolo_bbox_from(img)
+        segmentation = get_contours(str(seg_file))
+        xywh_normalized = create_yolo_bbox_from(img, segmentation)
         anno = {
             "file_name": fname,
             "label_id": label_id - 1, # YOLO index starts at 0
@@ -73,8 +82,8 @@ def prepare_yolo_annotations(image_files: list) -> list:
     return annotations
 
 
-def write_yolo_anno_to_file(label_dir: Path, fname: Path, file_list: list):
-    annotations = prepare_yolo_annotations(file_list)
+def write_yolo_anno_to_file(label_dir: Path, fname: Path, file_list: list, segment_dir: str):
+    annotations = prepare_yolo_annotations(file_list, segment_dir)
 
     written_lines = 0
     print(f" Writing labels to {fname}")
@@ -86,8 +95,11 @@ def write_yolo_anno_to_file(label_dir: Path, fname: Path, file_list: list):
             
             image_label_path = label_dir / (file_name.stem + ".txt")
             with open(image_label_path, "w") as f2:
-                x, y, w, h = bbox
-                txt = f"{label_id} {x:.3f} {y:.3f} {w:.3f} {h:.3f}\n"
+                # txt = f"{label_id} {x:.3f} {y:.3f} {w:.3f} {h:.3f}\n"
+                txt = f"{label_id}"
+                for item in bbox:
+                    txt += f" {item:.3f}"
+                txt += "\n"
                 f2.write(txt)
             
             f1.write(f"./images/{file_name.name}")
@@ -108,7 +120,7 @@ def stratified_k_folds(annotations: list, n_splits: int = 1, test_size: float = 
     return folds
 
 
-def generate_yolo_annotations(root_dir: Path, label_dir: Path, annotations: list, seed: int = None):
+def generate_yolo_annotations(root_dir: Path, label_dir: Path, annotations: list, segment_dir: str, seed: int = None):
     # Split dataset into train-val
     folds = stratified_k_folds(np.array(annotations), n_splits=4, test_size=0.1, seed=seed)
 
@@ -123,13 +135,13 @@ def generate_yolo_annotations(root_dir: Path, label_dir: Path, annotations: list
         )[0]
 
         train_label_fname = root_dir / f"small-yolo_train_{i}.txt"
-        write_yolo_anno_to_file(label_dir, train_label_fname, train_set)
+        write_yolo_anno_to_file(label_dir, train_label_fname, train_set, segment_dir)
 
         val_label_fname = root_dir / f"small-yolo_val_{i}.txt"
-        write_yolo_anno_to_file(label_dir, val_label_fname, val_set)
+        write_yolo_anno_to_file(label_dir, val_label_fname, val_set, segment_dir)
         
         test_label_fname = root_dir / f"small-yolo_test_{i}.txt"
-        write_yolo_anno_to_file(label_dir, test_label_fname, test_set)
+        write_yolo_anno_to_file(label_dir, test_label_fname, test_set, segment_dir)
         print()
 
 
@@ -162,7 +174,7 @@ def write_yolo_dataset_info(root_dir: Path, label_mapping: dict):
             f.write(f"{label_name}\n")
 
 
-def create_yolo_dataset(root_dir: Path, image_files: list, label_mapping: dict):
+def create_yolo_dataset(root_dir: Path, image_files: list, label_mapping: dict, segment_dir: str):
     """
     Write yolov5 dataset's contents: obj.names, obj.data, train.txt, labels/*.txt
     """
@@ -172,7 +184,7 @@ def create_yolo_dataset(root_dir: Path, image_files: list, label_mapping: dict):
         os.makedirs(YOLO_LABEL_DIR)
     
     write_yolo_dataset_info(root_dir, label_mapping)
-    generate_yolo_annotations(root_dir, YOLO_LABEL_DIR, image_files, seed=seed)
+    generate_yolo_annotations(root_dir, YOLO_LABEL_DIR, image_files, segment_dir, seed=seed)
 
 
 def plot_dataset_histogram(image_files, label_mapping):
@@ -188,6 +200,7 @@ def main():
     DATASET_DIR = Path("../datasets/track4")
     DATASET_ROOT_DIR = DATASET_DIR / "Auto-retail-syndata-release"
     IMAGE_DIR = DATASET_ROOT_DIR / "syn_image_train"
+    SEGMENTATION_DIR = DATASET_ROOT_DIR / "segmentation_labels"
     LABEL_FILE = DATASET_ROOT_DIR / "labels.txt"
 
     image_files = sorted(list(IMAGE_DIR.glob("**/*.jpg")))
@@ -197,7 +210,7 @@ def main():
 
     plot_dataset_histogram(image_files, label_mapping)
 
-    create_yolo_dataset(DATASET_ROOT_DIR, image_files, label_mapping)
+    create_yolo_dataset(DATASET_ROOT_DIR, image_files, label_mapping, SEGMENTATION_DIR)
 
 
 if __name__ == "__main__":
