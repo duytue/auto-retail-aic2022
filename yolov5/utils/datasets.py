@@ -394,7 +394,12 @@ class LoadImagesAndLabels(Dataset):
         self.path = path
         self.albumentations = Albumentations() if augment else None
 
-        self.test_background_image = cv2.imread("/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-test-img.png")
+        self.test_background_images = [
+            "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-0.png",
+            "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-1.png",
+            "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-2.png",
+            "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-3.png",
+        ]
 
         try:
             f = []  # image files
@@ -688,7 +693,9 @@ class LoadImagesAndLabels(Dataset):
         # background = np.full((size, size, 3), color, dtype=np.uint8)
 
         # background = np.random.randint(low=0, high=255, size=(size, size, 3), dtype=np.uint8)
-        background = cv2.resize(self.test_background_image, (size, size))
+        background_id = int(np.random.randint(0, len(self.test_background_images), size=1))
+        background = cv2.imread(self.test_background_images[background_id])
+        background = cv2.resize(background, (size, size))
 
         # Paste img into background
         h, w = img.shape[:2]
@@ -705,6 +712,7 @@ class LoadImagesAndLabels(Dataset):
                 org_size=(h, w)
             )
 
+        # Copy object onto background
         background[offset_y:offset_y+h, offset_x:offset_x+w] = img
         h0, w0 = background.shape[:2]  # orig hw
         r = self.img_size / max(h0, w0)  # ratio
