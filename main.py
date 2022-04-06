@@ -25,12 +25,14 @@ Usage - formats:
 """
 
 import argparse
+import math
 import os
 import sys
 from argparse import Namespace
 from pathlib import Path
 
 import cv2
+import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
 
@@ -59,6 +61,29 @@ from yolox.utils import fuse_model, get_model_info, postprocess
 from yolox.utils.visualize import plot_tracking
 from yolox.tracker.byte_tracker import BYTETracker
 from yolox.tracking_utils.timer import Timer
+
+
+def is_point_in_roi(box, roi):
+    assert len(box) == 4
+    assert len(roi) == 4
+
+    x1, y1, x2, y2 = box
+    rx1, ry1, rx2, ry2 = roi
+    return rx1 < x1 and ry1 < y1 and x2 < rx2 and y2 < ry2
+
+def is_center_point_in_rois(box, roi):
+    x1, y1, x2, y2 = box
+    c_x = int((x1 + x2) / 2)
+    c_y = int((y1 + y2) / 2)
+
+    rx1, ry1, rx2, ry2 = roi
+    return rx1 < c_x < rx2 and ry1 < c_y < ry2
+
+
+def xywh2xyxy(xywh):
+    assert len(xywh) == 4
+    x1, y1, x2, y2 = xywh[0], xywh[1], xywh[0] + xywh[2], xywh[1] + xywh[3]
+    return [x1, y1, x2, y2]
 
 
 @torch.no_grad()
@@ -132,13 +157,49 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
     tracker_params = Namespace(**tracker_params)
     tracker = BYTETracker(tracker_params, frame_rate=tracker_params.fps)
     timer = Timer()
-    frame_id = 0
-    results = []
+    # frame_id = 0
+    # results = []
+
+    # AIC2022 Submission
+    final_aic_submission = []
+    RoIs = {
+        # perfect rois
+        # "1": [500, 250, 1246, 839],
+        # "2": [610, 305, 1350, 895],
+        # "3": [600, 305, 1350, 895],
+        # "4": [600, 305, 1350, 895],
+        # "5": [600, 305, 1350, 895]
+
+        # vertical rois
+        "1": [0, 0, 1919, 1079],
+        "2": [0, 0, 1919, 1079],
+        "3": [0, 0, 1919, 1079],
+        "4": [0, 0, 1919, 1079],
+        "5": [0, 0, 1919, 1079]
+
+        # medium rois
+        # "1": [500, 154, 1246, 950],
+        # "2": [610, 154, 1350, 950],
+        # "3": [600, 154, 1350, 950],
+        # "4": [600, 154, 1350, 950],
+        # "5": [600, 154, 1350, 950]
+    }
 
     # Run inference
     model.warmup(imgsz=(1 if pt else bs, 3, *imgsz))  # warmup
     dt, seen = [0.0, 0.0, 0.0], 0
+    cur_path = None
     for path, im, im0s, vid_cap, s in dataset:
+        if path != cur_path:
+            LOGGER.debug(path)
+            frame_id = 0
+            cur_path = path
+            submission_id_set = set()
+            results = []
+        video_id = Path(path).stem.split('_')[-1]
+        # final_aic_submission[video_id] = []
+        video_fps = vid_cap.get(cv2.CAP_PROP_FPS)
+
         timer.tic()
         t1 = time_sync()
         im = torch.from_numpy(im).to(device)
@@ -184,16 +245,19 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                 online_tlwhs = []
                 online_ids = []
                 online_scores = []
+                online_class_names = []
                 for t in online_targets:
                     tlwh = t.tlwh
                     tid = t.track_id
-                    vertical = tlwh[2] / tlwh[3] > tracker_params.aspect_ratio_thresh
-                    if tlwh[2] * tlwh[3] > tracker_params.min_box_area and not vertical:
+                    # vertical = tlwh[2] / tlwh[3] > tracker_params.aspect_ratio_thresh
+                    if tlwh[2] * tlwh[3] > tracker_params.min_box_area:  # and not vertical:
                         online_tlwhs.append(tlwh)
                         online_ids.append(tid)
                         online_scores.append(t.score)
+                        online_class_names.append(names[int(t.class_id)])
                         results.append(
-                            f"{frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
+                            # f"{frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
+                            [frame_id, tid, int(t.class_id), tlwh[0], tlwh[1], tlwh[2], tlwh[3], t.score]
                         )
                 timer.toc()
                 online_im = plot_tracking(
@@ -201,7 +265,8 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                     online_tlwhs,
                     online_ids,
                     frame_id=frame_id + 1,
-                    fps=1. / timer.average_time
+                    fps=1. / timer.average_time,
+                    ids2=online_class_names
                 )
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(im.shape[2:], det[:, :4], im0.shape).round()
@@ -249,10 +314,37 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
                         save_path = str(Path(save_path).with_suffix('.mp4'))  # force *.mp4 suffix on results videos
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                    vid_writer[i].write(online_im if len(det) else im0)
+                    rois = RoIs[video_id]
+                    output_img = online_im if len(det) else im0
+                    output_img = cv2.rectangle(output_img, rois[:2], rois[2:], (0, 255, 0), thickness=2)
+                    vid_writer[i].write(output_img)
+                    # vid_writer[i].write(im0)
 
         # Print time (inference-only)
         LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
+        frame_id += 1
+
+        frames = set()
+        # Append AIC result
+        for item in results:
+            fid = item[0]
+            tid = item[1]
+            class_id = item[2]
+            class_id += 1  # AICITY challenge index starts at 1
+            tlwh = item[3:7]
+            xyxy = xywh2xyxy(tlwh)
+
+            frames.add(fid)
+            # print(frame_id, tid, xyxy)
+            if is_center_point_in_rois(xyxy, RoIs[video_id]) and tid not in submission_id_set:
+                submission_id_set.add(tid)
+                # final_aic_submission[video_id].append([class_id, int(math.floor(fid / video_fps))])
+                final_aic_submission.append([video_id, class_id, int(math.floor(fid / video_fps))])
+
+    # Sort submission by ["video_id", "timestamp"]
+    df = pd.DataFrame(final_aic_submission, columns=["video_id", "class_id", "timestamp"])
+    df = df.sort_values(by=["video_id", "timestamp"])
+    df.to_csv("submission_track4.txt", sep=" ", index=False, header=None)
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image

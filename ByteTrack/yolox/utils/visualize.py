@@ -72,7 +72,7 @@ def plot_tracking(image, tlwhs, obj_ids, scores=None, frame_id=0, fps=0., ids2=N
         obj_id = int(obj_ids[i])
         id_text = '{}'.format(int(obj_id))
         if ids2 is not None:
-            id_text = id_text + ', {}'.format(int(ids2[i]))
+            id_text = id_text + ', {}'.format(ids2[i])
         color = get_color(abs(obj_id))
         cv2.rectangle(im, intbox[0:2], intbox[2:4], color=color, thickness=line_thickness)
         cv2.putText(im, id_text, (intbox[0], intbox[1]), cv2.FONT_HERSHEY_PLAIN, text_scale, (0, 0, 255),

@@ -23,7 +23,7 @@ class Albumentations:
 
             self.transform = A.Compose([
                 # A.Blur(p=0.01),
-                A.MotionBlur(blur_limit=20, p=0.25),
+                A.MotionBlur(blur_limit=15, p=0.5),
                 # A.MedianBlur(p=0.1),
                 # A.ToGray(p=0.01),
                 A.CLAHE(p=0.1),

@@ -399,6 +399,8 @@ class LoadImagesAndLabels(Dataset):
             "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-1.png",
             "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-2.png",
             "/home/kitemetric/workspace/aicity-challenge-2022/auto-retail-aic2022/yolov5/background-images/background-3.png",
+            None,
+            None
         ]
 
         try:
@@ -694,8 +696,11 @@ class LoadImagesAndLabels(Dataset):
 
         # background = np.random.randint(low=0, high=255, size=(size, size, 3), dtype=np.uint8)
         background_id = int(np.random.randint(0, len(self.test_background_images), size=1))
-        background = cv2.imread(self.test_background_images[background_id])
-        background = cv2.resize(background, (size, size))
+        if self.test_background_images[background_id] is None:
+            background = np.full((size, size, 3), color, dtype=np.uint8)
+        else:
+            background = cv2.imread(self.test_background_images[background_id])
+            background = cv2.resize(background, (size, size))
 
         # Paste img into background
         h, w = img.shape[:2]
