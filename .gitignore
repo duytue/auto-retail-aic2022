@@ -241,3 +241,6 @@ cython_debug/
 *.webm
 
 # End of https://www.toptal.com/developers/gitignore/api/python,images,video
+**/*.pyc
+**/__pypackages__/
+.vscode/
