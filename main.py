@@ -55,15 +55,12 @@ BYTE_TRACK_ROOT = Path("ByteTrack").absolute()
 if str(BYTE_TRACK_ROOT) not in sys.path:
     sys.path.append(str(BYTE_TRACK_ROOT))
 
-from yolox.data.data_augment import preproc
-from yolox.exp import get_exp
-from yolox.utils import fuse_model, get_model_info, postprocess
 from yolox.utils.visualize import plot_tracking
 from yolox.tracker.byte_tracker import BYTETracker
 from yolox.tracking_utils.timer import Timer
 
 
-def is_point_in_roi(box, roi):
+def is_box_in_roi(box, roi):
     assert len(box) == 4
     assert len(roi) == 4
 
@@ -171,13 +168,13 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         # "5": [600, 305, 1350, 895]
 
         # vertical rois
-        "1": [0, 0, 1919, 1079],
-        "2": [0, 0, 1919, 1079],
-        "3": [0, 0, 1919, 1079],
-        "4": [0, 0, 1919, 1079],
-        "5": [0, 0, 1919, 1079]
+        "1": [500, 0, 1246, 1079],
+        "2": [610, 0, 1350, 1079],
+        "3": [600, 0, 1350, 1079],
+        "4": [600, 0, 1350, 1079],
+        "5": [600, 0, 1350, 1079]
 
-        # medium rois
+        # # medium rois
         # "1": [500, 154, 1246, 950],
         # "2": [610, 154, 1350, 950],
         # "3": [600, 154, 1350, 950],
@@ -336,7 +333,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
             frames.add(fid)
             # print(frame_id, tid, xyxy)
-            if is_center_point_in_rois(xyxy, RoIs[video_id]) and tid not in submission_id_set:
+            if is_box_in_roi(xyxy, RoIs[video_id]) and tid not in submission_id_set:
                 submission_id_set.add(tid)
                 # final_aic_submission[video_id].append([class_id, int(math.floor(fid / video_fps))])
                 final_aic_submission.append([video_id, class_id, int(math.floor(fid / video_fps))])
