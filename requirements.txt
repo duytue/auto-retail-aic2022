@@ -1,0 +1,99 @@
+absl-py @ file:///home/kitemetric/.cache/pypoetry/artifacts/fd/85/ab/c9a668cd72167af3d70bc17c234f5b70290267879d2408863d47df050e/absl_py-1.0.0-py3-none-any.whl
+albumentations==1.1.0
+apache-libcloud==3.5.1
+black @ file:///home/kitemetric/.cache/pypoetry/artifacts/46/91/26/a1f25c69b7fd507c84bce35f19ae381e4110090f732cd5dca11a86036b/black-22.1.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+cachetools @ file:///home/kitemetric/.cache/pypoetry/artifacts/f9/20/3d/b32baed65351f7bfb969d54b511441bab7950a0245cdb6d5bcb2a88dcc/cachetools-5.0.0-py3-none-any.whl
+certifi @ file:///home/kitemetric/.cache/pypoetry/artifacts/77/74/3e/daf57610ff13227e3b3f50a78487055f6ac94cc9363abd2463be34c5e9/certifi-2021.10.8-py2.py3-none-any.whl
+charset-normalizer @ file:///home/kitemetric/.cache/pypoetry/artifacts/ae/14/8e/087a104edb7ec627884755272de815d8ee4fd53b8745fdb12a087dd2e1/charset_normalizer-2.0.12-py3-none-any.whl
+click @ file:///home/kitemetric/.cache/pypoetry/artifacts/d0/b7/c0/76ec1424a198945d839eb2f192952791381b7feb7391d3734e25bb7650/click-8.0.4-py3-none-any.whl
+coolname==1.1.0
+cycler @ file:///home/kitemetric/.cache/pypoetry/artifacts/37/9c/25/cbaf98f95cc74b0a7617cef17520e3f063dbabd9f0f8a04f93a15f6632/cycler-0.11.0-py3-none-any.whl
+Cython @ file:///home/kitemetric/.cache/pypoetry/artifacts/49/d1/d6/16ec95c646bbec1d4beaaf7029787cca380596822f02c89e6ec4fa6f7c/Cython-0.29.28-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl
+cython-bbox @ file:///home/kitemetric/.cache/pypoetry/artifacts/c6/11/88/34e022cbfe068e1d1d81027d20cbfd1b00977263a7e7f519e160edca0c/cython_bbox-0.1.3.tar.gz
+docker-pycreds @ file:///home/kitemetric/.cache/pypoetry/artifacts/d8/39/1e/e7e74a2508ba56c50439f59cedea0b0b83433255ecfa7626aae74aef70/docker_pycreds-0.4.0-py2.py3-none-any.whl
+filterpy @ file:///home/kitemetric/.cache/pypoetry/artifacts/53/bb/9f/f98939d41cb8354a7f4ad45448cfa5be0f23e88765a37401541d38e1bb/filterpy-1.4.5.zip
+flake8 @ file:///home/kitemetric/.cache/pypoetry/artifacts/0d/4b/21/8c766e4015d3210fdbf8d1091620d52db306cd8c85ba8f2b37ebf48a75/flake8-4.0.1-py2.py3-none-any.whl
+fonttools @ file:///home/kitemetric/.cache/pypoetry/artifacts/6a/3f/cb/5aa58864c4e707dc3aef51929635d830fc1359aa25fcdbac309e692d18/fonttools-4.30.0-py3-none-any.whl
+gitdb @ file:///home/kitemetric/.cache/pypoetry/artifacts/2f/1b/c6/e19d782b5981117a4bd0a9874a94aeab968aea4df14fffb4826191727e/gitdb-4.0.9-py3-none-any.whl
+GitPython @ file:///home/kitemetric/.cache/pypoetry/artifacts/be/09/4d/21ed377572c6dd1bbeb575a06cce2f0b2319e360eef7a5c1ce31e19320/GitPython-3.1.27-py3-none-any.whl
+google-auth @ file:///home/kitemetric/.cache/pypoetry/artifacts/9d/ea/20/4655691abf00c2216c0483ac2ce3e9c7f87f6f4c91fd4296ad143e8a5d/google_auth-2.6.0-py2.py3-none-any.whl
+google-auth-oauthlib @ file:///home/kitemetric/.cache/pypoetry/artifacts/35/f1/0a/8a2ac196dbf26e110b0c838bbbaeb3707a1475bae0e456bdf49b0dbb7b/google_auth_oauthlib-0.4.6-py2.py3-none-any.whl
+grpcio @ file:///home/kitemetric/.cache/pypoetry/artifacts/36/d6/c5/9b0a4d0fb4a67f8ce5ff54ff218aa47f9ee1d1e4aa46e0ccd673e2a621/grpcio-1.44.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+idna @ file:///home/kitemetric/.cache/pypoetry/artifacts/f7/09/c9/8e80952436ff87855ddff4891a35ecf913b2b5dc97911f02a070ff2b1f/idna-3.3-py3-none-any.whl
+imageio==2.16.1
+importlib-metadata @ file:///home/kitemetric/.cache/pypoetry/artifacts/c9/3e/75/cf7a7a52d23e859075d6702d5c617168f8a4046b1a43888939c2631c4b/importlib_metadata-4.11.3-py3-none-any.whl
+imutils @ file:///home/kitemetric/.cache/pypoetry/artifacts/88/05/e0/39396ea7eb7350a312aea06562f6971eb4707f38a0058dad8586297c0c/imutils-0.5.4.tar.gz
+isort @ file:///home/kitemetric/.cache/pypoetry/artifacts/08/6b/bf/a994a4feb3ad0863ccc2edf385a86c88314f00f00732f08093af5fa3dc/isort-5.10.1-py3-none-any.whl
+joblib @ file:///home/kitemetric/.cache/pypoetry/artifacts/9b/a3/77/11a58dff170042277b83b2abf4a83664b0ef3c048f0cccee2b204ed842/joblib-1.1.0-py2.py3-none-any.whl
+kiwisolver @ file:///home/kitemetric/.cache/pypoetry/artifacts/e8/73/f2/36310fbff29feddd8cffc356c52ec2e61e5116280cb047122861ff23ef/kiwisolver-1.4.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl
+lap @ file:///home/kitemetric/.cache/pypoetry/artifacts/8f/53/55/91a7ff9e58dc34b4405279e5b40064c31886bd143f3590511a9d1a212b/lap-0.4.0.tar.gz
+loguru @ file:///home/kitemetric/.cache/pypoetry/artifacts/7d/c2/37/fdb9b22d8971db5318f58f70346e194e0f48279cf73537035073f7cf09/loguru-0.6.0-py3-none-any.whl
+Markdown @ file:///home/kitemetric/.cache/pypoetry/artifacts/50/34/0c/89a9ef9d0d40b883e6bb72dd502a1c818253a7a15b23f3f47c07cca2d9/Markdown-3.3.6-py3-none-any.whl
+matplotlib @ file:///home/kitemetric/.cache/pypoetry/artifacts/1d/d4/18/5dfd7fd648b6823496e90dd650446b2397823ce8a5bbc9176a378541fa/matplotlib-3.5.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl
+mccabe @ file:///home/kitemetric/.cache/pypoetry/artifacts/37/6e/69/4a33a4d6c80c775b1ee205face2c6e07b762c8602bb0f0d236ebe790c5/mccabe-0.6.1-py2.py3-none-any.whl
+mosaicml==0.5.0
+mypy-extensions @ file:///home/kitemetric/.cache/pypoetry/artifacts/b6/a0/b0/a5dc9acd6fd12aba308634f21bb7cf0571448f20848797d7ecb327aa12/mypy_extensions-0.4.3-py2.py3-none-any.whl
+networkx==2.7.1
+ninja @ file:///home/kitemetric/.cache/pypoetry/artifacts/0b/cd/79/9c9f22fea586d89fd21a062a00d139fde96f31dc46bfc7c2197fcd7b5b/ninja-1.10.2.3-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl
+numpy==1.21.5
+oauthlib @ file:///home/kitemetric/.cache/pypoetry/artifacts/43/bc/3b/1a36adc390b3467c0225e7a3916302237d10f6277ce9186bfb214a88ea/oauthlib-3.2.0-py3-none-any.whl
+opencv-python @ file:///home/kitemetric/.cache/pypoetry/artifacts/63/ae/c4/136451e24590cbb379bc5dab9dc9dbe5720e16e19e130a524a4546bccd/opencv_python-4.5.5.64-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+opencv-python-headless==4.5.5.64
+packaging @ file:///home/kitemetric/.cache/pypoetry/artifacts/7f/d5/4c/1d3c4776012fc0bbe1f86e69bde2c5e36d2d32caa2e4845ac1fc08ab3f/packaging-21.3-py3-none-any.whl
+pandas @ file:///home/kitemetric/.cache/pypoetry/artifacts/44/f9/3e/5c709b9ac432105a12b6ce020ae7bb51a5e0550a592de487df82d90dcf/pandas-1.4.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+pathspec @ file:///home/kitemetric/.cache/pypoetry/artifacts/04/91/14/294ed2ee6c852b0d466bdd15d393127eff4168b35ae81cedf5a03fe348/pathspec-0.9.0-py2.py3-none-any.whl
+pathtools @ file:///home/kitemetric/.cache/pypoetry/artifacts/db/27/0c/42fa00f22356328dc3bd6da21aae59384ad7f36690fe5ca5495586560f/pathtools-0.1.2.tar.gz
+Pillow @ file:///home/kitemetric/.cache/pypoetry/artifacts/b9/d0/3b/2108874afb323d6ad3d0b9ccb5b7bdceca035ee98f3a9afa21acd7fec4/Pillow-9.0.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+platformdirs @ file:///home/kitemetric/.cache/pypoetry/artifacts/69/d8/85/534d33a027326b761252b65d12289eed45f2fed6912d6ffd47affe6284/platformdirs-2.5.1-py3-none-any.whl
+promise @ file:///home/kitemetric/.cache/pypoetry/artifacts/0f/4f/91/54827555a9ce3597aca6d8a5ca3066e4cbdeb55dfc09e7dd69e113cec7/promise-2.3.tar.gz
+protobuf @ file:///home/kitemetric/.cache/pypoetry/artifacts/e5/3d/93/abfca3495686c964d50b3c8880e0f4c1055e1970f1d49fe561f4a0e536/protobuf-3.19.4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+psutil @ file:///home/kitemetric/.cache/pypoetry/artifacts/55/b7/fb/0622064a7047cd49bd6570366c26fcf40ada5172774ece694e2684004c/psutil-5.9.0-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+pyasn1 @ file:///home/kitemetric/.cache/pypoetry/artifacts/a6/f7/5e/59a43ec23ade0888631b3f24244da7f5d5a0b6b40849c86b8c6b4c54d1/pyasn1-0.4.8-py2.py3-none-any.whl
+pyasn1-modules @ file:///home/kitemetric/.cache/pypoetry/artifacts/09/f6/56/0e33158234b3e9b9e5d8eb01e7a96670a99ab43b3dbe89b0f129477a59/pyasn1_modules-0.2.8-py2.py3-none-any.whl
+pycocotools @ file:///home/kitemetric/.cache/pypoetry/artifacts/82/9d/00/4830683b5f2d0eea4ed5b7f34d2a5aafa2f790a6108949359856c6cc15/pycocotools-2.0.4.tar.gz
+pycodestyle @ file:///home/kitemetric/.cache/pypoetry/artifacts/c8/b5/c4/20e98d955193296673ec9d57510115c96ea8c60a7e2cd212c3999f9d20/pycodestyle-2.8.0-py2.py3-none-any.whl
+pyDeprecate==0.3.2
+pyflakes @ file:///home/kitemetric/.cache/pypoetry/artifacts/f2/d6/08/0d69fadd16b2e7ec2870ad6286f0929fbb102236d0ae0890816d760f32/pyflakes-2.4.0-py2.py3-none-any.whl
+pyparsing @ file:///home/kitemetric/.cache/pypoetry/artifacts/8a/67/7c/c21f632fb8255d9fc3882ed4548b0270011ef2a160a6031635274760a2/pyparsing-3.0.7-py3-none-any.whl
+python-dateutil @ file:///home/kitemetric/.cache/pypoetry/artifacts/0f/f1/e2/e1d3399cea26388e2ed5b93ea3e7c137d2b4027c5ba14c64ab839294ed/python_dateutil-2.8.2-py2.py3-none-any.whl
+pytorch-ranger==0.1.1
+pytz @ file:///home/kitemetric/.cache/pypoetry/artifacts/07/c1/43/6f22a533e7bc5e277f10b4c6033e936ff7bbeb6464e5f27dbfb6c641d7/pytz-2021.3-py2.py3-none-any.whl
+PyWavelets==1.3.0
+PyYAML==5.4.1
+qudida==0.0.4
+requests @ file:///home/kitemetric/.cache/pypoetry/artifacts/dc/17/bf/8d9779110a13421f6181028974b24800ec70f28bf9b311411e1868b8c7/requests-2.27.1-py2.py3-none-any.whl
+requests-oauthlib @ file:///home/kitemetric/.cache/pypoetry/artifacts/7a/ca/bd/b98220e9fdd9fd3ceaf57892a8c53682dd8c516ac0d0815118c2a9a9d8/requests_oauthlib-1.3.1-py2.py3-none-any.whl
+rsa @ file:///home/kitemetric/.cache/pypoetry/artifacts/73/0a/c4/2ebf484214eb26f696c3bd14ac3b561ac093bd9aff1692645bd5f73ca7/rsa-4.8-py3-none-any.whl
+ruamel.yaml==0.17.21
+ruamel.yaml.clib==0.2.6
+scikit-image==0.19.2
+scikit-learn @ file:///home/kitemetric/.cache/pypoetry/artifacts/61/f4/23/6c2a59277eafe74467e256e4a26bd7c105b73b18cb529324022a98a5b4/scikit_learn-1.0.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+scipy @ file:///home/kitemetric/.cache/pypoetry/artifacts/5c/38/63/9194f23ecdc809e85ad7f3d3c8b25f19557f556617586461090f6039c2/scipy-1.6.1-cp38-cp38-manylinux1_x86_64.whl
+seaborn @ file:///home/kitemetric/.cache/pypoetry/artifacts/49/c9/44/e61a087050daed8338ae0e6af2f97df6010b8bc382e397edc10116b7be/seaborn-0.11.2-py3-none-any.whl
+sentry-sdk @ file:///home/kitemetric/.cache/pypoetry/artifacts/de/2c/e6/6dd81dfb2fbabb70fc56eb964e32d98a51984249bf483583de8f3c8a27/sentry_sdk-1.5.7-py2.py3-none-any.whl
+setproctitle @ file:///home/kitemetric/.cache/pypoetry/artifacts/fc/26/94/2ee644e4d73d9d95e38fe6309f6e35655a6aa9de2fc0a3c80fefde9405/setproctitle-1.2.2-cp38-cp38-manylinux1_x86_64.whl
+setuptools-scm @ file:///home/kitemetric/.cache/pypoetry/artifacts/e6/44/32/64b792477e12ac4db04f7195b7a5e9b011013d630ced2cc609ef1bbb27/setuptools_scm-6.4.2-py3-none-any.whl
+shortuuid @ file:///home/kitemetric/.cache/pypoetry/artifacts/d7/e4/6e/4d609f6ed429fdf14b8fd01aeaf0feea3de91ab3d95d37b31ae44ee134/shortuuid-1.0.8-py3-none-any.whl
+six @ file:///home/kitemetric/.cache/pypoetry/artifacts/48/e6/04/8118155ae3ec3a16dd2a213bbf7a7d8a62c596b2e90f73a22c896269f1/six-1.16.0-py2.py3-none-any.whl
+smmap @ file:///home/kitemetric/.cache/pypoetry/artifacts/34/fa/bc/0bc422588046236494cd142256f75a2c2b4c0c5c5c9500cce5e886b75b/smmap-5.0.0-py3-none-any.whl
+tabulate @ file:///home/kitemetric/.cache/pypoetry/artifacts/ce/47/3a/2fd6543e7838cb13b9fe26cb162f6cb896af0c126ae202fdd70bca0e85/tabulate-0.8.9-py3-none-any.whl
+tensorboard @ file:///home/kitemetric/.cache/pypoetry/artifacts/8d/93/ce/693378cc7882e4e6ba0d4b2c2d28e33499d6d27972057bf364354bae79/tensorboard-2.8.0-py3-none-any.whl
+tensorboard-data-server @ file:///home/kitemetric/.cache/pypoetry/artifacts/00/59/84/14d222b8b99200f32c951408eb2916f733292916b0f40eeddeea089363/tensorboard_data_server-0.6.1-py3-none-manylinux2010_x86_64.whl
+tensorboard-plugin-wit @ file:///home/kitemetric/.cache/pypoetry/artifacts/f5/cd/3b/b958b1d13ecd800c364872138f9f84f0d405fd3b119ceb77f869b4ad72/tensorboard_plugin_wit-1.8.1-py3-none-any.whl
+termcolor @ file:///home/kitemetric/.cache/pypoetry/artifacts/33/6b/61/45ca85fe93f3295319a6eb1d6a8d2d449b6fa6d17c2ed2ec1810196a4a/termcolor-1.1.0.tar.gz
+thop @ file:///home/kitemetric/.cache/pypoetry/artifacts/2e/7b/0f/dc72b9c02f20174de9145bbda23facbf43e8cba3361abed8917c770e3f/thop-0.0.31.post2005241907-py3-none-any.whl
+threadpoolctl @ file:///home/kitemetric/.cache/pypoetry/artifacts/fb/a0/f2/467222d3d5d3bbb11a035f84e7d45c68a472d14b113b73e6e2f94bf7bf/threadpoolctl-3.1.0-py3-none-any.whl
+tifffile==2022.3.25
+tomli @ file:///home/kitemetric/.cache/pypoetry/artifacts/36/bd/11/98fa2af866c73d00f2498ade62c7fcf28db8656714b7b7a44e9cb2f855/tomli-2.0.1-py3-none-any.whl
+torch @ file:///home/kitemetric/.cache/pypoetry/artifacts/62/af/b7/ebe8edca1858cda77e3b492fb21069a046c12d23083fac6de24ce36fa9/torch-1.10.0-cp38-cp38-manylinux1_x86_64.whl
+torch-optimizer==0.1.0
+torchmetrics==0.7.3
+torchvision @ file:///home/kitemetric/.cache/pypoetry/artifacts/95/75/8f/b788209881a10f34751b08f49d036c22eeb1a10932644be92d677332cc/torchvision-0.11.1-cp38-cp38-manylinux1_x86_64.whl
+tqdm @ file:///home/kitemetric/.cache/pypoetry/artifacts/dc/57/2c/8a65e897068881e9684e94d9c50fea98441ce8707af4cc713c518e506d/tqdm-4.63.0-py2.py3-none-any.whl
+typing_extensions @ file:///home/kitemetric/.cache/pypoetry/artifacts/d8/15/d9/af7ec814ed6e1c696c44ca3bfff21d29263f6bcf7f23801bddca78b3c7/typing_extensions-4.1.1-py3-none-any.whl
+urllib3 @ file:///home/kitemetric/.cache/pypoetry/artifacts/82/6d/7d/27c3eb08fd57859a15aa9472bf2acde15878f936b4283bae9b2ad55599/urllib3-1.26.9-py2.py3-none-any.whl
+wandb @ file:///home/kitemetric/.cache/pypoetry/artifacts/fd/f9/d5/8616f3838c6c54718a47c992466305e9f74b4fd13e3a1f0a4e3a279b22/wandb-0.12.11-py2.py3-none-any.whl
+Werkzeug @ file:///home/kitemetric/.cache/pypoetry/artifacts/f5/ee/bb/3472871e57ee542bf8eb3be8901a1edc9b08ed260d40ffeeade8354d6e/Werkzeug-2.0.3-py3-none-any.whl
+yahp==0.1.0
+yaspin @ file:///home/kitemetric/.cache/pypoetry/artifacts/c9/f9/85/a7745419a7b786e5bd6b91a6b9bdae7a4612671ecd52c2cd2703ff061b/yaspin-2.1.0-py3-none-any.whl
+zipp @ file:///home/kitemetric/.cache/pypoetry/artifacts/54/a2/32/50907f67584b845d6877c7e224c118ff1db66fc6aed6c6ef86b22ed57f/zipp-3.7.0-py3-none-any.whl
