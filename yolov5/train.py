@@ -27,7 +27,6 @@ import torch
 import torch.distributed as dist
 import torch.nn as nn
 import yaml
-from composer import functional as cf
 from torch.cuda import amp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim import SGD, Adam, AdamW, lr_scheduler
@@ -328,7 +327,6 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
             # Forward
             with amp.autocast(enabled=cuda):
-                imgs = cf.cutout_batch(imgs, num_holes=1, length=0.5)
                 pred = model(imgs)  # forward
                 loss, loss_items = compute_loss(pred, targets.to(device))  # loss scaled by batch_size
                 if RANK != -1:

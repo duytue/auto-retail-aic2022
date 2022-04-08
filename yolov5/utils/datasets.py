@@ -26,6 +26,7 @@ import yaml
 from PIL import ExifTags, Image, ImageOps
 from torch.utils.data import DataLoader, Dataset, dataloader, distributed
 from tqdm import tqdm
+from composer import functional as cf
 
 from utils.augmentations import Albumentations, augment_hsv, copy_paste, letterbox, mixup, random_perspective
 from utils.general import (DATASETS_DIR, LOGGER, NUM_THREADS, check_dataset, check_requirements, check_yaml, clean_str,
@@ -756,6 +757,15 @@ class LoadImagesAndLabels(Dataset):
         for i, index in enumerate(indices):
             # Load image
             img, _, (org_h, org_w) = self.load_image(index)
+
+            # CutOut Augmentation
+            # # You may need to convert the color.
+            # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # im_pil = Image.fromarray(img)
+            # im_pil = cf.cutout_batch(im_pil, num_holes=1, length=0.5)
+            # # For reversing the operation:
+            # img = np.asarray(im_pil)
+            # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
             # Add random background
             # img, new_label, (h, w) = self.add_random_background(img, max_size=1280)

@@ -284,7 +284,7 @@ def run(
                         online_tlwhs.append(tlwh)
                         online_ids.append(tid)
                         online_scores.append(t.score)
-                        online_class_names.append(names[int(t.class_id)])
+                        online_class_names.append(int(t.class_id) + 1)
                         results.append(
                             # f"{frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
                             [frame_id, tid, int(t.class_id), tlwh[0], tlwh[1], tlwh[2], tlwh[3], t.score]
@@ -355,24 +355,38 @@ def run(
         frame_id += 1
 
         frames = set()
+        track_vs_cid = {}
         # Append AIC result
         for item in results:
             fid = item[0]
             tid = item[1]
             class_id = item[2]
+            score = item[7]
             class_id += 1  # AICITY challenge index starts at 1
             tlwh = item[3:7]
             xyxy = xywh2xyxy(tlwh)
 
+            if score < 0.7:
+                continue
+
             frames.add(fid)
             # print(frame_id, tid, xyxy)
-            if is_box_in_roi(xyxy, RoIs[video_id]) and tid not in submission_id_set:
-                submission_id_set.add(tid)
-                # final_aic_submission[video_id].append([class_id, int(math.floor(fid / video_fps))])
-                final_aic_submission.append([video_id, class_id, int(math.floor(fid / video_fps))])
+            if is_box_in_roi(xyxy, RoIs[video_id]):
+                if f"{tid},{class_id}" not in submission_id_set:
+                    submission_id_set.add(f"{tid},{class_id}")
+                    # final_aic_submission[video_id].append([class_id, int(math.floor(fid / video_fps))])
+                    final_aic_submission.append([video_id, class_id, int(math.floor(fid / video_fps)), item[7]])
+                else:
+                    if f"{tid},{class_id}" in track_vs_cid and class_id != track_vs_cid[tid]:
+                        # Track change id
+                        final_aic_submission.append([video_id, class_id, int(math.floor(fid / video_fps)), item[7]])
+                        print(f"-------- {video_id}, {class_id}, {int(math.floor(fid / video_fps))}")
+                        print(f"{track_vs_cid[tid]} --> {class_id}")
+                        submission_id_set.add(f"{tid},{class_id}")
+            track_vs_cid[tid] = class_id
 
     # Sort submission by ["video_id", "timestamp"]
-    df = pd.DataFrame(final_aic_submission, columns=["video_id", "class_id", "timestamp"])
+    df = pd.DataFrame(final_aic_submission, columns=["video_id", "class_id", "timestamp", "score"])
     df = df.sort_values(by=["video_id", "timestamp"])
     df.to_csv("submission_track4.txt", sep=" ", index=False, header=None)
 
